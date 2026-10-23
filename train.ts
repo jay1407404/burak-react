@@ -1,22 +1,14 @@
-function countOccurrences(obj: any, str: string): number {
-    let count = 0;
+function findIntersection(arr1: number[], arr2: number[]): number[] {
+    const result: number[] = [];
 
-    for (let key in obj) {
-        if (key === str) {
-            count++;
-        }
-
-        if (typeof obj[key] === "object" && obj[key] !== null) {
-            count = count + countOccurrences(obj[key], str);
+    for (let i = 0; i < arr1.length; i++) {
+        if (arr2.includes(arr1[i]) && !result.includes(arr1[i])) {
+            result.push(arr1[i]);
         }
     }
 
-    return count;
+    return result;
 }
 
-console.log(
-    countOccurrences(
-        { model: "Bugatti", steer: { model: "HANKOOK", size: 30 } },
-        "model"
-    )
-); // 2
+console.log(findIntersection([1, 2, 3], [3, 2, 0]));
+// [2, 3]
