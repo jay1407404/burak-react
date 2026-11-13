@@ -2,7 +2,7 @@
 import React, { Component } from "react";
 
 class Test extends Component {
-  constructor(props: any) {
+  constructor(props) {
     super(props);
     this.state = {
       brand: "Ford",
@@ -23,12 +23,16 @@ class Test extends Component {
 
   componentDidMount() {
     console.log("componentDidMount")
-    // runs after first render
+    // runs after first render = > Retrive Data From Backend Server
   }
 
   componentWillUnmount() {
     console.log("componentWillUnmount")
     // runs before component unmount
+  }
+
+  componentDidUpdate(){
+    
   }
 
   render() {
