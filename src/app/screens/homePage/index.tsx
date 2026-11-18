@@ -7,27 +7,27 @@ import Advertisement from "./Advertisement";
 import ActiveUsers from "./ActiveUsers";
 import Events from "./Events";
 import { useDispatch } from "react-redux";
-import { setPopularDishes } from "./slice";
+import { setPopularDishes, setTopUsers } from "./slice";
 import { setnewDishes as setNewDishes } from "./slice";
 import type { Dispatch } from "@reduxjs/toolkit";
 import ProductService from "../../services/ProductService";
 import { ProductCollection } from "../../../lib/enums/product.enum";
 import { Product } from "../../../lib/types/product";
+import MemberService from "../../services/MemberService";
+import { Member } from "../../../lib/types/member";
+import "../../../css/home.css"
 
 
 //** REDUX SLICE & SELECTOR */
 const actionDispatch = (dispatch: Dispatch) => ({
   setPopularDishes: (data: Product[]) => dispatch(setPopularDishes(data)),
   setNewDishes: (data: Product[]) => dispatch(setNewDishes(data)),
+  setTopUsers: (data: Member[]) => dispatch(setTopUsers(data))
 });
 
 
 export default function HomePage() {
-  const dispatch = useDispatch();
-  const { setPopularDishes, setNewDishes } = useMemo(
-    () => actionDispatch(dispatch),
-    [dispatch]
-  );
+  const { setPopularDishes, setNewDishes, setTopUsers } = actionDispatch(useDispatch());
 
   useEffect(() => {
     const product = new ProductService();
@@ -49,13 +49,21 @@ export default function HomePage() {
         page: 1,
         limit: 4,
         order: "createdAt",
-        productCollection: ProductCollection.DISH,
       })
       .then((data) => {
         setNewDishes(data);
       })
       .catch((err) => console.log(err));
-  }, [setPopularDishes, setNewDishes]);
+
+      const member = new MemberService();
+
+    member
+     .getTopUsers()
+     .then((data) => {
+      setTopUsers(data);
+     })
+     .catch((err) => console.log(err));
+  }, []);
 
   
 

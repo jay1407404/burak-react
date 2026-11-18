@@ -13,5 +13,5 @@ export const retriveNewDishes = createSelector(selectHomepage,
 );
 
 export const retriveTopUsers = createSelector(selectHomepage,
-    (HomePage) => HomePage.popularDishes
+    (HomePage) => HomePage.topUsers
 );
