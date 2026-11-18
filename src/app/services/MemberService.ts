@@ -12,10 +12,10 @@ class MemberService {
   public async getTopUsers(): Promise<Member[]> {
     try {
       const url = this.path + "/member/topusers";
-      const result = await axios.get(url);
+      const result = await axios.get<{ result: Member[] }>(url);
       console.log("getTopUsers:", result);
 
-      return result.data;
+      return result.data.result;
     } catch (err) {
       console.log("Error, getTopUsers:", err);
       throw err;
