@@ -1,0 +1,139 @@
+diff --git a/src/app/screens/homePage/PopularDishes.tsx b/src/app/screens/homePage/PopularDishes.tsx
+index 84d2d75..470178e 100644
+--- a/src/app/screens/homePage/PopularDishes.tsx
++++ b/src/app/screens/homePage/PopularDishes.tsx
+@@ -12,22 +12,19 @@ import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
+ import { useSelector } from "react-redux";
+ import { createSelector } from "reselect";
+ import { retrivePopularDishes } from "./selector";
+-import { serverApi } from "../../../lib/config";
+ import { Product } from "../../../lib/types/product";
++import { serverApi } from "../../../lib/config";
+ 
+-//** REDUX SLICE & SELECTOR */
+-
++/** REDUX SLICE & SELECTOR */
+ const popularDishesRetriever = createSelector(
+   retrivePopularDishes,
+   (popularDishes) => ({ popularDishes })
+ );
+ 
+-
+ export default function PopularDishes() {
+-const { popularDishes } = useSelector(popularDishesRetriever);
+-
+-console.log("PopularDishes:", popularDishes);
++  const { popularDishes } = useSelector(popularDishesRetriever)
+ 
++  console.log("popularDishes:", popularDishes); 
+   return (
+     <div className="popular-dishes-frame">
+       <Container>
+@@ -35,8 +32,8 @@ console.log("PopularDishes:", popularDishes);
+           <Box className="category-title">Popular Dishes</Box>
+           <Stack className="cards-frame">
+             {popularDishes.length !== 0 ? (
+-              popularDishes.map((ele: Product,) => {
+-                const imagePath = `${serverApi}/${ele.productImages[0]}`
++              popularDishes.map((ele:Product) => {
++                const imagePath = `${serverApi}/${ele.productImages[0]}`;
+                 return (
+                   <CssVarsProvider key={ele._id}>
+                     <Card className={"card"}>
+@@ -67,7 +64,7 @@ console.log("PopularDishes:", popularDishes);
+                               display: "flex",
+                             }}
+                           >
+-                            {ele.productViews}
++                            20
+                             <VisibilityIcon
+                               sx={{ fontSize: 25, marginLeft: "5px" }}
+                             />
+@@ -88,7 +85,7 @@ console.log("PopularDishes:", popularDishes);
+                           startDecorator={<DescriptionOutlinedIcon />}
+                           textColor="neutral.300"
+                         >
+-                          {ele.productDesc}
++                          This is delicious meal
+                         </Typography>
+                       </CardOverflow>
+                     </Card>
+diff --git a/src/app/screens/homePage/index.tsx b/src/app/screens/homePage/index.tsx
+index b2e7d97..445c2f1 100644
+--- a/src/app/screens/homePage/index.tsx
++++ b/src/app/screens/homePage/index.tsx
+@@ -1,4 +1,4 @@
+-import React, { useEffect } from "react";
++import React, { useEffect, useMemo } from "react";
+ import "../../../css/home.css";
+ import Statistics from "./Statistics";
+ import PopularDishes from "./PopularDishes";
+@@ -10,29 +10,56 @@ import Events from "./Events";
+ 
+ import { useDispatch } from "react-redux";
+ import { setPopularDishes } from "./slice";
++import { setnewDishes as setNewDishes } from "./slice";
++import type { Dispatch } from "@reduxjs/toolkit";
+ import ProductService from "../../services/ProductService";
+ import { ProductCollection } from "../../../lib/enums/product.enum";
++import { Product } from "../../../lib/types/product";
+ 
+ 
+ //** REDUX SLICE & SELECTOR */
++const actionDispatch = (dispatch: Dispatch) => ({
++  setPopularDishes: (data: Product[]) => dispatch(setPopularDishes(data)),
++  setNewDishes: (data: Product[]) => dispatch(setNewDishes(data)),
++});
++
+ 
+ export default function HomePage() {
+   const dispatch = useDispatch();
++  const { setPopularDishes, setNewDishes } = useMemo(
++    () => actionDispatch(dispatch),
++    [dispatch]
++  );
+ 
+   useEffect(() => {
+     const product = new ProductService();
+-    product.getProducts({
+-      page: 1,
+-      limit: 4,
+-      order: "productView",
+-      productCollection: ProductCollection.DISH,
+-    })
+-    .then(data => {
+-      console.log("data passed here:", data);
+-      dispatch(setPopularDishes(data));
+-    })
+-    .catch((err) => console.log(err))
+-  }, [dispatch]);
++
++    product
++      .getProducts({
++        page: 1,
++        limit: 4,
++        order: "productViews",
++        productCollection: ProductCollection.DISH,
++      })
++      .then((data) => {
++        setPopularDishes(data);
++      })
++      .catch((err) => console.log(err));
++
++    product
++      .getProducts({
++        page: 1,
++        limit: 4,
++        order: "createdAt",
++        productCollection: ProductCollection.DISH,
++      })
++      .then((data) => {
++        setNewDishes(data);
++      })
++      .catch((err) => console.log(err));
++  }, [setPopularDishes, setNewDishes]);
++
++  
+ 
+ 
+   //components
