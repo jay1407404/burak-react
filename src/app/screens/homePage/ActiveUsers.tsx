@@ -41,6 +41,7 @@ export default function ActiveUsers() {
                           <img src={imagePath} alt="" />
                         </AspectRatio>
                       </CardOverflow>
+
                       <CardOverflow>
                         <Typography className={"member-nickname"}>
                           {member.memberNick}

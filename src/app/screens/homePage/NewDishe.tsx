@@ -23,12 +23,9 @@ const newDishesRetriever = createSelector(
   })
 );
 export default function NewDishes() {
+  const { newDishes } = useSelector(newDishesRetriever);
 
-  const {newDishes } = useSelector(newDishesRetriever);
-  
   console.log("newDishes:", newDishes);
-
-
 
   return (
     <div className={"new-products-frame"}>
@@ -40,30 +37,51 @@ export default function NewDishes() {
               {newDishes.length !== 0 ? (
                 newDishes.map((product: Product) => {
                   const imagePath = `${serverApi}/${product.productImages[0]}`;
-                  const sizeVolume = product.productCollection === ProductCollection.DRINK ? product.productVolume + "l" : product.productSize + " size";
+                  const sizeVolume =
+                    product.productCollection === ProductCollection.DRINK
+                      ? product.productVolume + "L"
+                      : product.productSize + " size";
+
                   return (
-                    <Card key={product._id} variant="outlined" className={"card"}>
+                    <Card
+                      key={product._id}
+                      variant="outlined"
+                      className={"card"}
+                    >
                       <CardOverflow>
-                        <div className="product-sale"> { sizeVolume }</div>
+                        <div className="product-sale">{sizeVolume}</div>
                         <AspectRatio ratio="1">
                           <img src={imagePath} alt="" />
                         </AspectRatio>
                       </CardOverflow>
 
-                      <CardOverflow variant="soft" className="product-detail">
+                      <CardOverflow
+                        variant="soft"
+                        className="product-detail"
+                      >
                         <Stack className="info">
                           <Stack direction="row">
                             <Typography className={"title"}>
                               {product.productName}
                             </Typography>
-                            <Divider width="2" height="24" bg="#d9d9d9" />
-                            <Typography className={"price"}>${product.productPrice}</Typography>
+                            <Divider
+                              width="2"
+                              height="24"
+                              bg="#d9d9d9"
+                            />
+                            <Typography className={"price"}>
+                              ${product.productPrice}
+                            </Typography>
                           </Stack>
+
                           <Stack>
                             <Typography className={"views"}>
                               {product.productViews}
                               <VisibilityIcon
-                                sx={{ fontSize: 20, marginLeft: "5px" }}
+                                sx={{
+                                  fontSize: 20,
+                                  marginLeft: "5px",
+                                }}
                               />
                             </Typography>
                           </Stack>
@@ -73,7 +91,9 @@ export default function NewDishes() {
                   );
                 })
               ) : (
-                <Box className="no-data">New products are not available!</Box>
+                <Box className="no-data">
+                  New products are not available!
+                </Box>
               )}
             </CssVarsProvider>
           </Stack>

@@ -27,7 +27,11 @@ const actionDispatch = (dispatch: Dispatch) => ({
 
 
 export default function HomePage() {
-  const { setPopularDishes, setNewDishes, setTopUsers } = actionDispatch(useDispatch());
+  const dispatch = useDispatch();
+  const { setPopularDishes, setNewDishes, setTopUsers } = useMemo(
+    () => actionDispatch(dispatch),
+    [dispatch]
+  );
 
   useEffect(() => {
     const product = new ProductService();
@@ -49,21 +53,21 @@ export default function HomePage() {
         page: 1,
         limit: 4,
         order: "createdAt",
+        // productCollection: ProductCollection.DISH,
       })
       .then((data) => {
         setNewDishes(data);
       })
       .catch((err) => console.log(err));
 
-      const member = new MemberService();
-
+    const member = new MemberService();
     member
      .getTopUsers()
      .then((data) => {
       setTopUsers(data);
      })
      .catch((err) => console.log(err));
-  }, []);
+  }, [setPopularDishes, setNewDishes, setTopUsers]);
 
   
 

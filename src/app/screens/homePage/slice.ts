@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { HomePageState } from "../../../lib/types/screen";
-import { HomeRepairServiceSharp } from "@mui/icons-material";
 
 const initialState: HomePageState = {
     popularDishes: [],

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#eee9df"/>
+  <rect x="115" y="120" width="170" height="145" rx="12" fill="none" stroke="#9b907e" stroke-width="8"/>
+  <circle cx="160" cy="165" r="17" fill="#9b907e"/>
+  <path d="m122 250 65-65 40 40 28-28 24 24" fill="none" stroke="#9b907e" stroke-width="8"/>
+  <text x="200" y="310" text-anchor="middle" font-family="Arial,sans-serif" font-size="20" fill="#756b5c">Photo unavailable</text>
+</svg>
