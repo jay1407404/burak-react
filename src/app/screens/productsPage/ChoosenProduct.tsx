@@ -1,5 +1,8 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import ProductService from "../../services/ProductService";
+import { Member } from "../../../lib/types/member";
 import { serverApi } from "../../../lib/config";
 import { Container, Stack, Box } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -21,11 +24,12 @@ import {
   retrieveRestaurant,
 } from "./selector";
 import { Product } from "../../../lib/types/product";
+import MemberService from "../../services/MemberService";
 
 /** REDUX SLICE & SELECTOR */
 const actionDispatch = (dispatch: Dispatch) => ({
-  setRestaurant: (data: Product[]) => dispatch(setRestaurant(data)),
-  setChosenProduct: (data: Product[]) =>
+  setRestaurant: (data: Member) => dispatch(setRestaurant(data)),
+  setChosenProduct: (data: Product | null) =>
     dispatch(setChosenProduct(data)),
 });
 
@@ -45,11 +49,28 @@ const restaurantRetriever = createSelector(
 
 
 export default function ChosenProduct() {
+  const { productId } = useParams<{ productId: string }>();
+  const { setRestaurant, setChosenProduct } = actionDispatch(useDispatch());
   const { chosenProduct } = useSelector(chosenProductRetriever);
+  const { restaurant } = useSelector(restaurantRetriever);
 
-  if (!chosenProduct) {
-    return <Box className="chosen-product">No product selected.</Box>;
-  }
+  console.log("productId:", productId);
+
+  useEffect(() => {
+    const product = new ProductService();
+    product
+      .getProduct(productId)
+      .then((data) => setChosenProduct(data))
+      .catch((err) => console.log(err));
+
+    const member = new MemberService();
+    member
+      .getRestaurant()
+      .then((data) => setRestaurant(data))
+      .catch((err) => console.log(err));
+  }, []);
+
+  if (!chosenProduct) return <Box>Loading product...</Box>;
 
   return (
     <div className={"chosen-product"}>
@@ -65,9 +86,10 @@ export default function ChosenProduct() {
           >
             {chosenProduct.productImages.map(
               (ele: string, index: number) => {
+                const imagePath = `${serverApi}/${ele}`
                 return (
                   <SwiperSlide key={index}>
-                    <img className="slider-image" src={`${serverApi}/${ele}`} alt={chosenProduct.productName} />
+                    <img className="slider-image" src={imagePath} />
                   </SwiperSlide>
                 );
               }
@@ -76,8 +98,9 @@ export default function ChosenProduct() {
         </Stack>
         <Stack className={"chosen-product-info"}>
           <Box className={"info-box"}>
-            <strong className={"product-name"}>{chosenProduct.productName}</strong>
-            <span className={"resto-name"}>Burak</span>
+            <strong className={"product-name"}>{chosenProduct?.productName}</strong>
+            <span className={"resto-name"}>{restaurant?.memberNick}</span>
+            <span className={"resto-name"}>{restaurant?.memberPhone}</span>
             <Box className={"rating-box"}>
               <Rating name="half-rating" defaultValue={2.5} precision={0.5} />
               <div className={"evaluation-box"}>
@@ -87,10 +110,13 @@ export default function ChosenProduct() {
                 </div>
               </div>
             </Box>
-            <p className={"product-desc"}>{chosenProduct.productDesc}</p>
+            <p className={"product-desc"}>{
+            chosenProduct?.productDesc?
+            chosenProduct?.productDesc
+            : "No Description"}</p>
             <Divider height="1" width="100%" bg="#000000" />
             <div className={"product-price"}>
-              <span>Price:</span>
+              <span>${chosenProduct?.productPrice}:</span>
               <span>${chosenProduct.productPrice}</span>
             </div>
             <div className={"button-box"}>
