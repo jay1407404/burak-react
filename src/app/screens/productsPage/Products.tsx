@@ -1,28 +1,50 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Box, Button, Container, Stack } from "@mui/material";
 import { Badge, Pagination } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 
-interface Product {
-  productName: string;
-  imagePath: string;
-  price?: number;
-}
+import { useDispatch, useSelector } from "react-redux";
+import { createSelector } from "reselect";
+import { retrieveProducts } from "./selector";
+import { serverApi } from "../../../lib/config";
+import { Product } from "../../../lib/types/product";
+import { setProducts } from "./slice";
+import type { Dispatch } from "@reduxjs/toolkit";
+import ProductService from "../../services/ProductService";
 
-const products: Product[] = [
-  { productName: "Cutlet", imagePath: "/img/cutlet.webp" },
+
+/** REDUX SLICE & SELECTOR */
+const actionDispatch = (dispatch: Dispatch) => ({
+  setProducts: (data: Product[]) => dispatch(setProducts(data)),
+});
+
+const productsRetriever = createSelector(
+  retrieveProducts,
+  (products) => ({
+    products,
+  })
+);
+
+
+const products = [
   { productName: "Kebab", imagePath: "/img/kebab-fresh.webp" },
-  { productName: "Kebab", imagePath: "/img/kebab.webp" },
-  { productName: "Lavash", imagePath: "/img/lavash.webp" },
-  { productName: "Lavash", imagePath: "/img/lavash.webp" },
-  { productName: "Cutlet", imagePath: "/img/cutlet.webp" },
-  { productName: "Kebab", imagePath: "/img/kebab.webp" },
+  { productName: "Kebab", imagePath: "/img/kebab-fresh.webp" },
+  { productName: "Kebab", imagePath: "/img/kebab-fresh.webp" },
+  { productName: "Kebab", imagePath: "/img/kebab-fresh.webp" },
+  { productName: "Kebab", imagePath: "/img/kebab-fresh.webp" },
   { productName: "Kebab", imagePath: "/img/kebab-fresh.webp" },
 ];
 
-
 export default function Products() {
+  const dispatch = useDispatch();
+  const { products } = useSelector(productsRetriever);
+  useEffect(() => {
+    const { setProducts } = actionDispatch(dispatch);
+    new ProductService().getProducts({ page: 1, limit: 8, order: "createdAt" })
+      .then(setProducts)
+      .catch(console.error);
+  }, [dispatch]);
   return (
     <div className={"products"}>
       <Container maxWidth={false}>
@@ -97,7 +119,7 @@ export default function Products() {
                       <Stack
                         className={"product-img"}
                         sx={{
-                          backgroundImage: `url(${product.imagePath})`,
+                          backgroundImage: `url(${serverApi}/${product.productImages[0]})`,
                         }}
                       >
                         <div className={"product-sale"}>
@@ -116,7 +138,7 @@ export default function Products() {
                           <Badge badgeContent={20} color="secondary">
                             <RemoveRedEyeIcon
                               sx={{
-                                color: 20 ? "gray" : "white",
+                                color: "gray",
                               }}
                             />
                           </Badge>
@@ -129,7 +151,7 @@ export default function Products() {
 
                       <Box className={"product-price"}>
                         <span className={"price-icon"}>$</span>
-                        {product.price ?? 15}
+                        {product.productPrice}
                       </Box>
                     </Stack>
                   );
