@@ -17,6 +17,7 @@ import { createSelector } from "reselect";
 import { retrieveProducts } from "./selector";
 import { serverApi } from "../../../lib/config";
 import { useHistory } from "react-router-dom";
+import { CartItem } from "../../../lib/types/search";
 
 const productsRetriever = createSelector(
   retrieveProducts,
@@ -27,8 +28,13 @@ const actionDispatch = (dispatch: Dispatch) => ({
   setProducts: (data: Product[]) => dispatch(setProducts(data)),
 });
 
+interface ProductPageProps {
+  onAdd: (item:CartItem) => void;
+}
 
-export default function Products() {
+
+export default function Products(props: ProductPageProps) {
+  const {onAdd} = props;
   const dispatch = useDispatch();
   const { setProducts } = useMemo(() => actionDispatch(dispatch), [dispatch]);
   const { products } = useSelector(productsRetriever);
@@ -39,6 +45,8 @@ export default function Products() {
     productCollection: ProductCollection.DISH,
     search: "",
   });
+
+  
 
   const [searchText, setSearchText] = useState<string>("")
   const history = useHistory();
@@ -197,7 +205,18 @@ const chooseDishHandler = (id:string) => {
                       >
                         <div className={"product-sale"}>{sizeVolume}</div>
 
-                        <Button className={"shop-btn"}>
+                        <Button className={"shop-btn"}
+                        onClick={(e) => {
+                          onAdd({
+                             _id: product._id,
+                             quantity: 1,
+                             name: product.productName,
+                             price: product.productPrice,
+                             image: product.productImages[0],
+
+                          });
+                          e.stopPropagation();
+                        }}>
                           <img
                             src={"/icons/shopping-cart.svg"}
                             alt="Shopping cart"
