@@ -186,7 +186,7 @@ const chooseDishHandler = (id:string) => {
             <Stack className={"product-wrapper"}>
               {products.length !== 0 ? (
                 products.map((product, index) => {
-                  const imagePath = `${serverApi}/${product.productImages[0]}`;
+                  const imagePath = product.productImages[0] ? `${serverApi}/${product.productImages[0]}` : "/img/image-placeholder.svg";
                  const sizeVolume =
                  product.productCollection === ProductCollection.DRINK
                   ? product.productVolume + " litre"

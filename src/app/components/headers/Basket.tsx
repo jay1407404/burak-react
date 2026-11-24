@@ -118,7 +118,7 @@ const totalPrice = (itemsPrice + shippingCost).toFixed(1);
                 <CancelIcon color={"primary"} 
                 onClick={() => onDelete(item)} />
                 </div>
-                <img src={`${serverApi}/${item.image}`} className={"product-img"} />
+                <img src={item.image ? `${serverApi}/${item.image}` : "/img/image-placeholder.svg"} className={"product-img"} />
                 <span className={"product-name"}></span>
                 <p className={"product-price"}>${item.price} x {item.quantity}</p>
 <              Box sx={{ minWidth: 120 }}>
