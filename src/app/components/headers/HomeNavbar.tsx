@@ -3,6 +3,9 @@ import { NavLink } from "react-router-dom";
 import Basket from "./Basket";
 import { useState,  useEffect, useSyncExternalStore } from "react";
 import { CartItem } from "../../../lib/types/search";
+import { useGlobals } from "../../hooks/useGlobals";
+import { serverApi } from "../../../lib/config";
+import type { MouseEvent } from "react";
 
 
 interface HomeNavbarProps {
@@ -13,6 +16,7 @@ interface HomeNavbarProps {
   onDeleteAll: () => void;
   setSignupOpen: (isOpen: boolean) => void
   setLoginOpen: (isOpen: boolean) => void
+  handleLogoutClick: (e: React.MouseEvent<HTMLElement>) => void;
 
 }
 
@@ -24,9 +28,10 @@ export default function HomeNavbar(props: HomeNavbarProps) {
       onDelete, 
       onDeleteAll,
       setSignupOpen,
-      setLoginOpen, 
+      setLoginOpen,
+      handleLogoutClick,
     } = props;
-    const authMember = null;
+    const { authMember } = useGlobals();
 
     //Use effect array deppendency ma'nosi
     // 1.faqat bir marta ishga tushadi
@@ -96,9 +101,14 @@ export default function HomeNavbar(props: HomeNavbarProps) {
                             </Box>
                         ) : (
                             <img
-                                className="user-avatar"
-                                src={"/icons/default-user.svg"}
-                                alt="User profile"
+                               className="user-avatar"
+                               src={
+                               authMember?.memberImage
+                               ? `${serverApi}/${authMember?.memberImage}`
+                               : "/icons/default-user.svg"
+                               }
+                               aria-haspopup={"true"}
+                               onClick={handleLogoutClick}
                             />
                         )}
                     </Stack>

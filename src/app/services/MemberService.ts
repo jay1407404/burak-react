@@ -56,16 +56,34 @@ class MemberService {
 public async login(input: LoginInput): Promise<Member>{
     try {
       const url = this.path + "/login";
+      //token backenddan frontentga yozilyabdi
       const result = await axios.post(url, input, { withCredentials: true});
       console.log("login:", result);
 
+      //localStoragemizga memberData nomi ostida Authenticated bo'lgan userimizni ma'lumotini saqlab oldik
       const member: Member = result.data.member;
       console.log("member:", member);
       localStorage.setItem("memberData", JSON.stringify(member));
+      
 
       return member;
     } catch (err) {
-      console.log("Error, signup:", err);
+      console.log("Error, login:", err);
+      throw err;
+    }
+  }
+
+  public async logout(): Promise<void>{
+    try {
+      const url = this.path + "/member/logout";
+      //token backenddan frontentga yozilyabdi
+      const result = await axios.post(url, {}, { withCredentials: true});
+      console.log("logout:", result);
+
+      localStorage.removeItem("memberData");
+      
+    } catch (err) {
+      console.log("Error, logout:", err);
       throw err;
     }
   }

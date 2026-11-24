@@ -1,6 +1,8 @@
 import { Box, Button, Container, Stack } from "@mui/material"
 import { NavLink } from "react-router-dom"
+import type { MouseEvent } from "react";
 import Basket from "./Basket";
+import { useGlobals } from "../../hooks/useGlobals";
 import { CartItem } from "../../../lib/types/search";
 
 interface OtherNavbarProps{
@@ -11,6 +13,7 @@ interface OtherNavbarProps{
   onDeleteAll: () => void;
   setLoginOpen: (isOpen: boolean) => void;
   setSignupOpen: (isOpen: boolean) => void
+  handleLogoutClick: (event: MouseEvent<HTMLElement>) => void;
 }
 
 export default function OtherNavbar(props: OtherNavbarProps) {
@@ -22,8 +25,9 @@ export default function OtherNavbar(props: OtherNavbarProps) {
     onDeleteAll, 
     setLoginOpen,
     setSignupOpen,
+    handleLogoutClick,
   } = props;
-  const authMember = null;
+  const { authMember } = useGlobals();
   
     return  (
     <div className="other-navbar">
@@ -89,6 +93,7 @@ export default function OtherNavbar(props: OtherNavbarProps) {
                                 className="user-avatar"
                                 src={"/icons/default-user.svg"}
                                 alt="User profile"
+                                onClick={handleLogoutClick}
                             />
                         )}
                     </Stack>
