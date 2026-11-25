@@ -119,7 +119,7 @@ const totalPrice = (itemsPrice + shippingCost).toFixed(1);
                 onClick={() => onDelete(item)} />
                 </div>
                 <img src={item.image ? `${serverApi}/${item.image}` : "/img/image-placeholder.svg"} className={"product-img"} />
-                <span className={"product-name"}></span>
+                <span className={"product-name"}>{item.name}</span>
                 <p className={"product-price"}>${item.price} x {item.quantity}</p>
 <              Box sx={{ minWidth: 120 }}>
                 <div className="col-2">
