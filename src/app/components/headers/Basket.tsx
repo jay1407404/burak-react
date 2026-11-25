@@ -7,8 +7,11 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import type { CartItem } from "../../../lib/types/search";
-import { serverApi } from "../../../lib/config";
+import { Messages, serverApi } from "../../../lib/config";
 import { useHistory } from "react-router-dom";
+import { useGlobals } from "../../hooks/useGlobals";
+import OrderService from "../../services/OrderService";
+import { sweetErrorHandling } from "../../../lib/sweetAlert";
 
 interface BasketProps {
   onAdd: (item: CartItem) => void;
@@ -21,7 +24,7 @@ interface BasketProps {
 
 export default function Basket(props: BasketProps) {
   const { cartItems, onAdd, onRemove, onDelete, onDeleteAll } = props;
-  const authMember = null;
+  const { authMember } = useGlobals();
   const history = useHistory();
   const itemsPrice: number = cartItems.reduce(
   (a: number, c: CartItem) => a + c.quantity * c.price,
@@ -42,6 +45,27 @@ const totalPrice = (itemsPrice + shippingCost).toFixed(1);
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const proceedOrderHandler = async () => {
+  try {
+    handleClose();
+    if (!authMember) throw new Error(Messages.error2);
+
+    const order = new OrderService();
+    await order.createOrder(cartItems);
+
+    onDeleteAll();
+
+    //Refresh VIA Context
+ 
+    history.push("/orders")
+  } catch (err) {
+    console.log(err);
+    sweetErrorHandling(err).then();
+  }
+};
+
+
 
   return (
     <Box className={"hover-line"}>
@@ -136,7 +160,11 @@ const totalPrice = (itemsPrice + shippingCost).toFixed(1);
            <span className={"price"}>
            Total: ${totalPrice} ({itemsPrice} + {shippingCost})
           </span>
-          <Button startIcon={<ShoppingCartIcon />} variant={"contained"}>
+          <Button 
+          onClick={proceedOrderHandler}
+          startIcon={<ShoppingCartIcon />}
+          variant="contained"
+           >
          Order
          </Button>
       </Box>

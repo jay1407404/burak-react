@@ -4,13 +4,13 @@ import { Product } from "./product";
 export interface OrderItemInput {
   itemQuantity: number;
   itemPrice: number;
-  productId: string;
+  itemProductId: string;
   orderId?: string;
 }
 
 export interface OrderItem {
   _id: string;
-  itemQuaatity: number;
+  itemQuantity: number;
   itemPrice: number;
   orderId: string;
   productId: string;

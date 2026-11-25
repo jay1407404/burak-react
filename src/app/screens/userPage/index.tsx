@@ -4,9 +4,12 @@ import InstagramIcon from "@mui/icons-material/Instagram";
 import TelegramIcon from "@mui/icons-material/Telegram";
 import YouTubeIcon from "@mui/icons-material/YouTube";
 import { Settings } from "./Settings";
+import { useGlobals } from "../../hooks/useGlobals";
 import "../../../css/userPage.css";
 
 export default function UserPage() {
+  const { authMember } = useGlobals();
+
   return (
     <div className={"user-page"}>
       <Container>
@@ -15,7 +18,7 @@ export default function UserPage() {
             <Box sx={{ display: "flex", flexDirection: "column" }}>
               <Box className={"menu-name"}>Modify Member Details</Box>
               <Box className={"menu-content"}>
-                <Settings />
+                <Settings memberNick={authMember?.memberNick} />
               </Box>
             </Box>
           </Stack>
@@ -34,7 +37,7 @@ export default function UserPage() {
                     <img src={"/icons/user-badge.svg"} />
                   </div>
                 </div>
-                <span className={"order-user-name"}>Martin</span>
+                <span className={"order-user-name"}>{authMember?.memberNick}</span>
                 <span className={"order-user-prof"}>User</span>
                 <span className={"order-user-prof"}>No address</span>
               </Box>

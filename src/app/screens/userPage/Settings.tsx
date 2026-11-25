@@ -2,7 +2,7 @@ import { Box } from "@mui/material";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import Button from "@mui/material/Button";
 
-export function Settings() {
+export function Settings({ memberNick }: { memberNick?: string }) {
   return (
     <Box className={"settings"}>
       <Box className={"member-media-frame"}>
@@ -24,8 +24,8 @@ export function Settings() {
           <input
             className={"spec-input mb-nick"}
             type="text"
-            placeholder={"Martin"}
-            defaultValue={"Martin"}
+            placeholder="Username"
+            defaultValue={memberNick ?? ""}
             name="memberNick"
           />
         </div>

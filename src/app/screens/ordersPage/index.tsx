@@ -1,4 +1,4 @@
-import React, { SyntheticEvent, useState } from "react";
+import React, { SyntheticEvent, useEffect, useLayoutEffect, useState } from "react";
 import { Box, Button, Container } from "@mui/material";
 
 import PausedOrder from "./PausedOrders";
@@ -13,7 +13,9 @@ import {
 } from "./slice";
 
 import "../../../css/order.css";
-import { Order } from "../../../lib/types/order";
+import { Order, OrderInquiry } from "../../../lib/types/order";
+import { OrderStatus } from "../../../lib/enums/order.enum";
+import OrderService from "../../services/OrderService";
 
 /** REDUX SLICE & SELECTOR */
 const actionDispatch = (dispatch: Dispatch) => ({
@@ -27,6 +29,32 @@ export default function OrdersPage() {
   actionDispatch(useDispatch());
 
   const [value, setValue] = useState("PAUSE");
+
+  const [orderInquiry, setOrderInquiry] = useState<OrderInquiry>({
+  page: 1,
+  limit: 5,
+  orderStatus: OrderStatus.PAUSE,
+});
+
+useEffect(() => {
+  const order = new OrderService();
+
+  order
+  .getMyOrders({...orderInquiry, orderStatus: OrderStatus.PAUSE})
+  .then((data) => setPausedOrders(data))
+  .catch((err) => console.log(err))
+
+  order
+  .getMyOrders({...orderInquiry, orderStatus: OrderStatus.PROCESS})
+  .then((data) => setProcessOrders(data))
+  .catch((err) => console.log(err))
+
+  order
+  .getMyOrders({...orderInquiry, orderStatus: OrderStatus.FINISH})
+  .then((data) => setFinishedOrders(data))
+  .catch((err) => console.log(err))
+}, [orderInquiry]);
+
 
   /** HANDLERS **/
   const handleChange = (e: SyntheticEvent, newValue: string) => {
