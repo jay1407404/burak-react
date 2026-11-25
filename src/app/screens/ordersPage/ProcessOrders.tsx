@@ -1,7 +1,11 @@
 import { Box, Stack, Button } from "@mui/material";
 import moment from "moment";
+import { useState } from "react";
 import { Order, OrderItem } from "../../../lib/types/order";
-import { serverApi } from "../../../lib/config";
+import { Messages, serverApi } from "../../../lib/config";
+import { OrderStatus } from "../../../lib/enums/order.enum";
+import { sweetErrorHandling } from "../../../lib/sweetAlert";
+import OrderService from "../../services/OrderService";
 import { useGlobals } from "../../hooks/useGlobals";
 import { useSelector } from "react-redux";
 import { retrieveProcessOrders } from "./selector";
@@ -15,9 +19,27 @@ const processOrdersRetriever = createSelector(
   (processOrders) => ({ processOrders })
 );
 
-export default function ProcessOrders() {
+export default function ProcessOrders({ onFulfilSuccess }: { onFulfilSuccess: () => void }) {
   const { processOrders } = useSelector(processOrdersRetriever);
-  const { authMember } = useGlobals();
+  const { authMember, setOrderBuilder } = useGlobals();
+  const [isFulfilling, setIsFulfilling] = useState(false);
+
+  const fulfilOrderHandler = async (orderId: string) => {
+    if (!window.confirm("Have you received your order")) return;
+
+    setIsFulfilling(true);
+    try {
+      if (!authMember) throw new Error(Messages.error2);
+      const order = new OrderService();
+      await order.updateOrder({ orderId, orderStatus: OrderStatus.FINISH });
+      setOrderBuilder(new Date());
+      onFulfilSuccess();
+    } catch (err) {
+      await sweetErrorHandling(err);
+    } finally {
+      setIsFulfilling(false);
+    }
+  };
 
   return (
     <Box className="orders-main">
@@ -76,7 +98,12 @@ export default function ProcessOrders() {
     {moment().format("YY-MM-DD HH:mm")}
   </p>
   <Box className="order-actions">
-  <Button variant="contained" className="payment-btn">
+  <Button
+    variant="contained"
+    className="payment-btn"
+    disabled={isFulfilling}
+    onClick={() => fulfilOrderHandler(order._id)}
+  >
     Verify to Fulfil
   </Button>
   </Box>
